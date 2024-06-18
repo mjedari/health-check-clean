@@ -16,7 +16,7 @@ import (
 
 type Redis struct {
 	Client *redis.Client
-	Config config.RedisConfig
+	Config config.Redis
 }
 
 func (r *Redis) CheckHealth(ctx context.Context) error {
@@ -32,7 +32,7 @@ func (r *Redis) ResetConnection(ctx context.Context) error {
 	return nil
 }
 
-func NewRedis(conf config.RedisConfig) (*Redis, error) {
+func NewRedis(conf config.Redis) (*Redis, error) {
 	ctx := context.TODO()
 
 	redisRetry, err := utils.Retry(func(ctx context.Context) (any, error) {

@@ -33,12 +33,9 @@ func start() {
 	mux := http.NewServeMux()
 	//
 
-	newMySQL := storage.NewMySQL()
+	newMySQL := storage.NewMySQL(config.Config.MySQL)
 	//newTaskPool := storage.NewInMemory()
-	redis, _ := storage.NewRedis(config.RedisConfig{
-		Host: "localhost",
-		Port: "6379",
-	})
+	redis, _ := storage.NewRedis(config.Config.Redis)
 	newTaskService := tasksrv.NewTaskService(redis)
 	healthService := healthsrv.NewHealthService(newMySQL, newTaskService)
 	hh := handler.NewHealthHandler(healthService)

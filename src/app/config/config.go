@@ -1,6 +1,9 @@
 package config
 
-import "time"
+import (
+	"strings"
+	"time"
+)
 
 var Config Configuration
 
@@ -10,14 +13,15 @@ type Server struct {
 	Environment string
 }
 
-type MySQLConfig struct {
-	Host string
-	Port string
-	User string
-	Pass string
+type MySQL struct {
+	Host     string
+	Port     string
+	User     string
+	Pass     string
+	Database string
 }
 
-type RedisConfig struct {
+type Redis struct {
 	Host string
 	Port string
 	User string
@@ -32,7 +36,12 @@ type Webhook struct {
 
 type Configuration struct {
 	Server  Server
-	MySQL   MySQLConfig
-	Redis   RedisConfig
+	MySQL   MySQL
+	Redis   Redis
 	Webhook Webhook
+}
+
+func (c *Configuration) IsProduction() bool {
+	return strings.ToLower(c.Server.Environment) == "production" ||
+		strings.ToLower(c.Server.Environment) == "prod"
 }

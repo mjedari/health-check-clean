@@ -19,7 +19,7 @@ func Retry(effector Effector, retries int, delay time.Duration) Effector {
 				return response, err
 			}
 
-			logrus.Println("Attempt %d failed; retrying in %v", r+1, delay)
+			logrus.Printf("Attempt %d failed; retrying in %v", r+1, delay)
 
 			select {
 			case <-time.After(delay):

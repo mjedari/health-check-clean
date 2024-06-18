@@ -3,6 +3,7 @@ package cmd
 import (
 	"database/sql"
 	"fmt"
+	"github.com/mjedari/health-checker/app/config"
 	"github.com/mjedari/health-checker/domain"
 	"github.com/spf13/cobra"
 	"gorm.io/driver/mysql"
@@ -25,8 +26,8 @@ func init() {
 func migrate() {
 	fmt.Println("migration started...")
 
-	dsn := "root:2231218/m@tcp(127.0.0.1:3306)/"
-	dbName := "health_db"
+	conf := config.Config.MySQL
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", conf.User, conf.Pass, conf.Host, conf.Port, conf.Database)
 
 	// Connect to MySQL server
 	msqldb, err := sql.Open("mysql", dsn)
@@ -36,13 +37,13 @@ func migrate() {
 	defer msqldb.Close()
 
 	// Create the database
-	_, err = msqldb.Exec(fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s", dbName))
+	_, err = msqldb.Exec(fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s", conf.Database))
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("Database created successfully")
 
-	db, err := gorm.Open(mysql.Open(fmt.Sprintf("root:2231218/m@tcp(127.0.0.1:3306)/%s", dbName)), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("failed to connect database: ", err)
 	}

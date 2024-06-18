@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"fmt"
+	"github.com/mjedari/health-checker/app/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"log"
@@ -12,11 +13,10 @@ type MySQL struct {
 	db *gorm.DB
 }
 
-func NewMySQL() *MySQL {
+func NewMySQL(conf config.MySQL) *MySQL {
 	// create a connection to mysql
-
-	dbName := "health_db"
-	db, err := gorm.Open(mysql.Open(fmt.Sprintf("root:2231218/m@tcp(127.0.0.1:3306)/%s?parseTime=true", dbName)), &gorm.Config{})
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", conf.User, conf.Pass, conf.Host, conf.Port, conf.Database)
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("failed to connect database: ", err)
 	}

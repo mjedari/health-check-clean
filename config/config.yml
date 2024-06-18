@@ -3,13 +3,14 @@ Server:
   Port: 8080
   Environment: dev # dev, prod
 
-MySQLConfig:
-  Host: localhost
-  Port: 3056
-  User:
-  Pass:
+MySQL:
+  Host: 127.0.0.1
+  Port: 3306
+  User: root
+  Pass: 2231218/m
+  Database: health_db
 
-RedisConfig:
+Redis:
   Host: localhost
   Port: 6379
   User:
