@@ -55,10 +55,16 @@ func (e *Endpoint) Validate() ValidationErrors {
 		errs = append(errs, errors.New("method is invalid"))
 	}
 
-	// validate headers
-	// validate body
+	if e.Interval == 0 {
+		errs = append(errs, errors.New("internal is required"))
+	}
 
-	// validate interval
+	if e.Interval < 0 {
+		errs = append(errs, errors.New("internal is invalid"))
+	}
+
+	// todo: validate headers, body
+
 	return errs
 }
 

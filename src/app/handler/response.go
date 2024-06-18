@@ -11,8 +11,8 @@ type Response struct {
 }
 
 type ValidationResponse struct {
-	Message string
-	Errors  []string
+	Message string   `json:"message"`
+	Errors  []string `json:"errors"`
 }
 
 func JsonResponse(w http.ResponseWriter, data any, status int) {

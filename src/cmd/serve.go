@@ -35,7 +35,7 @@ func start() {
 	memory := storage.NewInMemory()
 	//redis, _ := storage.NewRedis(config.Config.Redis)
 	newTaskService := tasksrv.NewTaskService(memory)
-	healthService := healthsrv.NewHealthService(newMySQL, newTaskService)
+	healthService := healthsrv.NewHealthService(newMySQL, newTaskService, config.Config.Webhook)
 	hh := handler.NewHealthHandler(healthService)
 
 	// set routes

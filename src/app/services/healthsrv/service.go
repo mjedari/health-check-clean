@@ -3,6 +3,7 @@ package healthsrv
 import (
 	"context"
 	"fmt"
+	"github.com/mjedari/health-checker/app/config"
 	"github.com/mjedari/health-checker/app/contract"
 	"github.com/mjedari/health-checker/domain"
 	"github.com/sirupsen/logrus"
@@ -14,10 +15,11 @@ import (
 type HealthService struct {
 	repo        contract.IRepository
 	taskService contract.ITaskService
+	config      config.Webhook
 }
 
-func NewHealthService(repo contract.IRepository, taskService contract.ITaskService) *HealthService {
-	return &HealthService{repo: repo, taskService: taskService}
+func NewHealthService(repo contract.IRepository, taskService contract.ITaskService, webhook config.Webhook) *HealthService {
+	return &HealthService{repo: repo, taskService: taskService, config: webhook}
 }
 
 func (s *HealthService) FetchAllEndpoints(ctx context.Context) ([]domain.Endpoint, error) {

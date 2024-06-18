@@ -64,7 +64,7 @@ func (h *HealthHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	JsonResponse(w, Response{Message: "operation succeed!"}, http.StatusOK)
+	JsonResponse(w, endpoint, http.StatusOK)
 
 }
 
