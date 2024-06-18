@@ -1,0 +1,22 @@
+Server:
+  Host: localhost
+  Port: 8080
+  Environment: dev # dev, prod
+
+MySQLConfig:
+  Host: localhost
+  Port: 3056
+  User:
+  Pass:
+
+RedisConfig:
+  Host: localhost
+  Port: 6379
+  User:
+  Pass:
+
+Webhook:
+  URL: localhost
+  Method: POST # get, post
+  Timeout: 30 # in seconds
+
