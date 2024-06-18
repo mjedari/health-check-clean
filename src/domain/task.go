@@ -9,6 +9,7 @@ import (
 /*
 Task
 */
+
 type Task struct {
 	Endpoint   Endpoint
 	Stop       chan bool
@@ -36,6 +37,7 @@ func NewTask(endpoint Endpoint) *Task {
 /*
 Task Cache
 */
+
 type TaskCache struct {
 	list map[uint]*Task
 	sync.Mutex

@@ -94,9 +94,7 @@ func (h *HealthHandler) Start(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *HealthHandler) Stop(w http.ResponseWriter, r *http.Request) {
-	// get r.Body.id
-	// get endpoint from database
-	ctx := r.Context() // todo: or background()
+	ctx := context.Background()
 	strID := r.PathValue("id")
 	id, err := strconv.Atoi(strID)
 	if err != nil {

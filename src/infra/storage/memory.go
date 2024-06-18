@@ -27,7 +27,7 @@ func (m *InMemory) Get(ctx context.Context, key uint, out any) error {
 		return errors.New("not found")
 	}
 
-	rv := reflect.ValueOf(v)
+	rv := reflect.ValueOf(out)
 	if rv.Kind() != reflect.Pointer || rv.IsNil() {
 		return errors.New("pointer needed")
 	}
