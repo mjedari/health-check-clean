@@ -1,10 +1,11 @@
 package contract
 
-import "context"
+import (
+	"github.com/mjedari/health-checker/domain"
+)
 
-type ITaskPool interface {
-	Add(ctx context.Context, key uint, item any) error
-	Exist(ctx context.Context, key uint) bool
-	Get(ctx context.Context, key uint, out any) error
-	Remove(ctx context.Context, key uint) error
+type ITaskCache interface {
+	Get(key uint) *domain.Task
+	Set(key uint, task *domain.Task)
+	Delete(key uint)
 }

@@ -29,14 +29,12 @@ func init() {
 
 func start() {
 	fmt.Println("Starting...")
-
 	mux := http.NewServeMux()
-	//
 
 	newMySQL := storage.NewMySQL(config.Config.MySQL)
-	//newTaskPool := storage.NewInMemory()
-	redis, _ := storage.NewRedis(config.Config.Redis)
-	newTaskService := tasksrv.NewTaskService(redis)
+	memory := storage.NewInMemory()
+	//redis, _ := storage.NewRedis(config.Config.Redis)
+	newTaskService := tasksrv.NewTaskService(memory)
 	healthService := healthsrv.NewHealthService(newMySQL, newTaskService)
 	hh := handler.NewHealthHandler(healthService)
 

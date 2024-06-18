@@ -2,14 +2,13 @@ package domain
 
 import (
 	"net/http"
+	"sync"
 	"time"
 )
 
-// each task should be assigned to a go routine
-
-// to make this scalable we need to store date on redis to access fast to be cloud native
-//so we need a service as a TaskService
-
+/*
+Task
+*/
 type Task struct {
 	Endpoint   Endpoint
 	Stop       chan bool
@@ -32,4 +31,36 @@ func (t *Task) UpdateStatus(status int) {
 
 func NewTask(endpoint Endpoint) *Task {
 	return &Task{Endpoint: endpoint, Stop: make(chan bool)}
+}
+
+/*
+Task Cache
+*/
+type TaskCache struct {
+	list map[uint]*Task
+	sync.Mutex
+}
+
+func NewTaskCache() *TaskCache {
+	return &TaskCache{list: make(map[uint]*Task)}
+}
+
+func (p *TaskCache) Get(key uint) *Task {
+	p.Lock()
+	v, ok := p.list[key]
+	p.Unlock()
+	if !ok {
+		return nil
+	}
+	return v
+}
+
+func (p *TaskCache) Set(key uint, task *Task) {
+	p.Lock()
+	p.list[key] = task
+	p.Unlock()
+}
+
+func (p *TaskCache) Delete(key uint) {
+	delete(p.list, key)
 }

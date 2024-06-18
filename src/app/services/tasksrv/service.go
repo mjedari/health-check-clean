@@ -8,13 +8,12 @@ import (
 )
 
 type TaskService struct {
-	storage contract.ITaskPool
-	cache   map[uint]*domain.Task
-	// todo: mutex for race condition
+	storage contract.IStorage
+	cache   contract.ITaskCache
 }
 
-func NewTaskService(storage contract.ITaskPool) *TaskService {
-	return &TaskService{storage: storage, cache: make(map[uint]*domain.Task)}
+func NewTaskService(storage contract.IStorage) *TaskService {
+	return &TaskService{storage: storage, cache: domain.NewTaskCache()}
 }
 
 func (s *TaskService) GetOrCreateTask(ctx context.Context, endpoint domain.Endpoint) (*domain.Task, error) {
@@ -32,7 +31,7 @@ func (s *TaskService) GetOrCreateTask(ctx context.Context, endpoint domain.Endpo
 	}
 
 	// store task in memory
-	s.cache[endpoint.ID] = task
+	s.cache.Set(endpoint.ID, task)
 	return task, nil
 }
 
@@ -43,8 +42,8 @@ func (s *TaskService) GetTask(ctx context.Context, endpoint domain.Endpoint) (*d
 		return nil, err
 	}
 
-	v, ok := s.cache[item.ID]
-	if !ok {
+	v := s.cache.Get(item.ID)
+	if v == nil {
 		return nil, errors.New("task not found in task service cache")
 	}
 
@@ -67,7 +66,7 @@ func (s *TaskService) RemoveTask(ctx context.Context, endpoint domain.Endpoint) 
 	}
 
 	// delete from cache
-	delete(s.cache, endpoint.ID)
+	s.cache.Delete(endpoint.ID)
 
 	return nil
 }
