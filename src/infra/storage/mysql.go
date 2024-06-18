@@ -4,24 +4,36 @@ import (
 	"context"
 	"fmt"
 	"github.com/mjedari/health-checker/app/config"
+	"github.com/mjedari/health-checker/infra/utils"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"log"
 )
 
 type MySQL struct {
 	db *gorm.DB
 }
 
-func NewMySQL(conf config.MySQL) *MySQL {
-	// create a connection to mysql
+func NewMySQL(conf config.MySQL) (*MySQL, error) {
+	ctx := context.TODO()
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", conf.User, conf.Pass, conf.Host, conf.Port, conf.Database)
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	if err != nil {
-		log.Fatal("failed to connect database: ", err)
-	}
 
-	return &MySQL{db: db}
+	mysqlRetry, err := utils.Retry(func(ctx context.Context) (any, error) {
+		db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+
+		if err != nil {
+			return nil, err
+		}
+
+		return db, nil
+	}, utils.RetryTimes, utils.RetryDelay)(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+	// here we convert interface datatype to gorm.DB
+	db := mysqlRetry.(*gorm.DB)
+
+	return &MySQL{db: db}, nil
 }
 
 func (s *MySQL) Create(ctx context.Context, value interface{}) error {

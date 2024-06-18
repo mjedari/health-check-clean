@@ -31,7 +31,7 @@ func start() {
 	fmt.Println("Starting...")
 	mux := http.NewServeMux()
 
-	newMySQL := storage.NewMySQL(config.Config.MySQL)
+	newMySQL, _ := storage.NewMySQL(config.Config.MySQL)
 	memory := storage.NewInMemory()
 	//redis, _ := storage.NewRedis(config.Config.Redis)
 	newTaskService := tasksrv.NewTaskService(memory)
