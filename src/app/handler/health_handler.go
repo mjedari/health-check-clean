@@ -23,7 +23,7 @@ func (h *HealthHandler) Index(w http.ResponseWriter, r *http.Request) {
 	endpoints, err := h.service.FetchAllEndpoints(context.Background())
 	if err != nil {
 		// todo: handle errors properly
-		logrus.Error("failed to get data from service: %s", err)
+		logrus.Errorf("failed to get data from service: %s", err)
 		http.Error(w, "something went wrong", http.StatusInternalServerError)
 		return
 	}
@@ -59,7 +59,7 @@ func (h *HealthHandler) Create(w http.ResponseWriter, r *http.Request) {
 	err = h.service.CreateEndpoint(context.Background(), &endpoint)
 	if err != nil {
 		// todo: handle errors properly
-		logrus.Error("failed to get data from service: %s", err)
+		logrus.Errorf("failed to get data from service: %s", err)
 		http.Error(w, "something went wrong", http.StatusInternalServerError)
 		return
 	}
