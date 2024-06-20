@@ -6,6 +6,7 @@ import (
 	"github.com/mjedari/health-checker/app/handler"
 	"github.com/mjedari/health-checker/app/services/healthsrv"
 	"github.com/mjedari/health-checker/app/services/tasksrv"
+	"github.com/mjedari/health-checker/domain"
 	"github.com/mjedari/health-checker/infra/storage"
 	"github.com/spf13/cobra"
 	"log"
@@ -34,7 +35,8 @@ func start() {
 	newMySQL, _ := storage.NewMySQL(config.Config.MySQL)
 	memory := storage.NewInMemory()
 	//redis, _ := storage.NewRedis(config.Config.Redis)
-	newTaskService := tasksrv.NewTaskService(memory)
+	taskCache := domain.NewTaskCache()
+	newTaskService := tasksrv.NewTaskService(memory, taskCache)
 	healthService := healthsrv.NewHealthService(newMySQL, newTaskService, config.Config.Webhook)
 	hh := handler.NewHealthHandler(healthService)
 

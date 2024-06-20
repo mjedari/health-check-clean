@@ -1,18 +1,18 @@
 Server:
-  Host: localhost
+  Host: localhost # for docker to use in mac put: host.docker.internal
   Port: 8080
   Environment: dev # dev, prod
 
 MySQL:
-  Host: 127.0.0.1
-  Port: 3306
+  Host: localhost
+  Port: 3306 #3306
   User: root
   Pass: 2231218/m
   Database: health_db
 
 Redis:
   Host: localhost
-  Port: 6379
+  Port: 6379 # 6379
   User:
   Pass:
 
@@ -21,3 +21,5 @@ Webhook:
   Method: POST # get, post
   Timeout: 30 # in seconds
 
+Service:
+  Storage: redis # memory

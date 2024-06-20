@@ -12,8 +12,8 @@ type TaskService struct {
 	cache   contract.ITaskCache
 }
 
-func NewTaskService(storage contract.IStorage) *TaskService {
-	return &TaskService{storage: storage, cache: domain.NewTaskCache()}
+func NewTaskService(storage contract.IStorage, cache contract.ITaskCache) *TaskService {
+	return &TaskService{storage: storage, cache: cache}
 }
 
 func (s *TaskService) GetOrCreateTask(ctx context.Context, endpoint domain.Endpoint) (*domain.Task, error) {
