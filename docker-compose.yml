@@ -11,31 +11,23 @@ services:
     depends_on:
       - mysql
       - redis
-    networks:
-      - health-checker
 
   mysql:
     container_name: mysql
     image: mysql:8.0
     platform: linux/amd64
-    ports:
-      - '3307:3306'
+    command: '--default-authentication-plugin=mysql_native_password'
+    restart: always
     environment:
         MYSQL_ROOT_PASSWORD: 2231218/m
         MYSQL_DATABASE: health_db
     volumes:
       - my-db:/var/lib/mysql
-    networks:
-      - health-checker
 
   redis:
     container_name: redis
     image: redis:7.0
     platform: linux/amd64
-    ports:
-      - "6380:6379"
-    networks:
-      - health-checker
 
 volumes:
   my-db:
