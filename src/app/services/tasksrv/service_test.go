@@ -3,6 +3,7 @@ package tasksrv
 import (
 	"context"
 	"errors"
+	"github.com/mjedari/health-checker/app/services/mock_files"
 	"github.com/mjedari/health-checker/domain"
 	"github.com/stretchr/testify/mock"
 	"testing"
@@ -35,8 +36,8 @@ import (
 func TestGetTask_TaskExists(t *testing.T) {
 
 	// arrange
-	mockCache := new(MockCache)
-	mockPool := new(MockTaskPool)
+	mockCache := new(mock_files.MockCache)
+	mockPool := new(mock_files.MockTaskPool)
 	service := NewTaskService(mockCache, mockPool)
 
 	ctx := context.Background()
@@ -58,8 +59,8 @@ func TestGetTask_TaskExists(t *testing.T) {
 
 func TestGetTask_TaskDoesNotExist(t *testing.T) {
 	// arrange
-	mockCache := new(MockCache)
-	mockPool := new(MockTaskPool)
+	mockCache := new(mock_files.MockCache)
+	mockPool := new(mock_files.MockTaskPool)
 	service := NewTaskService(mockCache, mockPool)
 
 	ctx := context.Background()

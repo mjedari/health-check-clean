@@ -10,6 +10,7 @@ import (
 	"github.com/mjedari/health-checker/app/services/tasksrv"
 	"github.com/mjedari/health-checker/domain"
 	"github.com/mjedari/health-checker/infra/storage"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"log"
 	"net"
@@ -32,7 +33,6 @@ func init() {
 }
 
 func start() {
-	fmt.Println("Starting...")
 	mux := http.NewServeMux()
 
 	newMySQL, _ := storage.NewMySQL(config.Config.MySQL)
@@ -52,18 +52,27 @@ func start() {
 	mux.HandleFunc("DELETE /endpoint/{id}", hh.Delete)
 
 	// start web server
-	go func() {
-		err := http.ListenAndServe(net.JoinHostPort(config.Config.Server.Host, config.Config.Server.Port), mux)
-		if err != nil {
-			log.Fatal("could not start server: ", err.Error())
-		}
-	}()
+	runHTTPServer(mux)
 
 	// wait to end program by os interrupt or kill signal
 	ch := make(chan os.Signal)
 	signal.Notify(ch, os.Kill, os.Interrupt)
 	<-ch
 	fmt.Println("\nShutting down...")
+}
+
+func runHTTPServer(mux *http.ServeMux) {
+	go func() {
+		err := http.ListenAndServe(net.JoinHostPort(config.Config.Server.Host, config.Config.Server.Port), mux)
+		if err != nil {
+			log.Fatal("could not start server: ", err.Error())
+		}
+
+	}()
+
+	logrus.WithField("HTTP_Host", config.Config.Server.Host).
+		WithField("HTTP_Port", config.Config.Server.Port).
+		Info("starting HTTP/REST health-checker...")
 }
 
 func newCache() contract.ICache {

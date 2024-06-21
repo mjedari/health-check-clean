@@ -1,4 +1,4 @@
-package tasksrv
+package mock_files
 
 import (
 	"github.com/mjedari/health-checker/domain"
