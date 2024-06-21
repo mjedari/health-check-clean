@@ -2,24 +2,21 @@ package healthsrv
 
 import (
 	"context"
-	"fmt"
-	"github.com/mjedari/health-checker/app/config"
+	"errors"
 	"github.com/mjedari/health-checker/app/contract"
 	"github.com/mjedari/health-checker/domain"
 	"github.com/sirupsen/logrus"
-	"math/rand"
-	"net/http"
 	"time"
 )
 
 type HealthService struct {
-	repo        contract.IRepository
+	client      contract.IClient
 	taskService contract.ITaskService
-	config      config.Webhook
+	repo        contract.IRepository
 }
 
-func NewHealthService(repo contract.IRepository, taskService contract.ITaskService, webhook config.Webhook) *HealthService {
-	return &HealthService{repo: repo, taskService: taskService, config: webhook}
+func NewHealthService(client contract.IClient, repo contract.IRepository, taskService contract.ITaskService) *HealthService {
+	return &HealthService{client: client, repo: repo, taskService: taskService}
 }
 
 func (s *HealthService) FetchAllEndpoints(ctx context.Context) ([]domain.Endpoint, error) {
@@ -64,6 +61,12 @@ func (s *HealthService) StartWatching(ctx context.Context, endpoint domain.Endpo
 		return err
 	}
 
+	if task.IsRunning() {
+		return errors.New("task has been started already")
+	}
+
+	task.TaskStart()
+
 	go func() {
 		ticker := time.NewTicker(endpoint.Interval * time.Second)
 		defer ticker.Stop()
@@ -75,46 +78,20 @@ func (s *HealthService) StartWatching(ctx context.Context, endpoint domain.Endpo
 			case <-ctx.Done():
 				return
 			case <-ticker.C:
-				// call http
-				// retry if needed
-				// get the response
-				// decide to call webhook or not
-				// update database if needed
-				res := mockCall(endpoint)
-				fmt.Println(task.LastStatus, res.status)
-				if task.IsStatusChanged(res.status) {
-					logrus.Infof("endpoint %s status changed to code: %d", endpoint.URL, res.status)
-					mockWebhookCall(endpoint)
+				resStatus := s.client.HttpCall(endpoint)
+				if task.IsStatusChanged(resStatus) {
+					logrus.Infof("endpoint %s status changed to code: %d", endpoint.URL, resStatus)
+					go s.client.HttpWebhookCall(endpoint, resStatus)
 				}
 
-				task.UpdateStatus(res.status)
+				task.UpdateStatus(resStatus)
 			}
 		}
 	}()
 
+	logrus.Infof("watching started for %s", endpoint.URL)
 	return nil
 
-}
-
-func mockCall(endpoint domain.Endpoint) MockedResponse {
-	fmt.Println("called endpoint number: ", endpoint.ID)
-	successResponse := MockedResponse{status: http.StatusOK}
-	failedResponse := MockedResponse{status: http.StatusInternalServerError}
-	r := rand.Intn(100)
-	if r%2 == 0 {
-		return successResponse
-	}
-	return failedResponse
-}
-
-func mockWebhookCall(endpoint domain.Endpoint) MockedResponse {
-	fmt.Println("webhook called for endpoint number: ", endpoint.ID)
-	successResponse := MockedResponse{status: http.StatusOK}
-	return successResponse
-}
-
-type MockedResponse struct {
-	status int
 }
 
 func (s *HealthService) StopWatching(ctx context.Context, endpoint domain.Endpoint) error {
@@ -123,5 +100,6 @@ func (s *HealthService) StopWatching(ctx context.Context, endpoint domain.Endpoi
 		return err
 	}
 
+	logrus.Infof("watching stopped for %s", endpoint.URL)
 	return nil
 }

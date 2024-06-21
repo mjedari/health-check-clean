@@ -34,11 +34,16 @@ type Webhook struct {
 	Timeout time.Duration
 }
 
+type Service struct {
+	Cache string
+}
+
 type Configuration struct {
 	Server  Server
 	MySQL   MySQL
 	Redis   Redis
 	Webhook Webhook
+	Service Service
 }
 
 func (c *Configuration) IsProduction() bool {

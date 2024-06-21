@@ -1,6 +1,5 @@
 .PHONY: run serve build start clean migrate test help
 
-
 run:
 	@cd $(root_path) && go run ./main.go serve
 
@@ -23,7 +22,7 @@ migrate:
 
 
 test:
-	@cd $(root_path) && go test ./... -v
+	@cd $(root_path) && go test ./... -v --cover
 
 help:
 	@cd $(root_path) && go run ./main.go

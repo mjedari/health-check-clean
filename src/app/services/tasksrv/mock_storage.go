@@ -5,26 +5,26 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-type MockStorage struct {
+type MockCache struct {
 	mock.Mock
 }
 
-func (m *MockStorage) Add(ctx context.Context, key uint, item any) error {
+func (m *MockCache) Add(ctx context.Context, key uint, item any) error {
 	args := m.Called(ctx, key, item)
 	return args.Error(0)
 }
 
-func (m *MockStorage) Exist(ctx context.Context, key uint) bool {
+func (m *MockCache) Exist(ctx context.Context, key uint) bool {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (m *MockStorage) Get(ctx context.Context, key uint, out any) error {
+func (m *MockCache) Get(ctx context.Context, key uint, out any) error {
 	args := m.Called(ctx, key, out)
 	return args.Error(0)
 }
 
-func (m *MockStorage) Remove(ctx context.Context, key uint) error {
+func (m *MockCache) Remove(ctx context.Context, key uint) error {
 	//TODO implement me
 	panic("implement me")
 }

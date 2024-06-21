@@ -16,6 +16,7 @@ type IHealthService interface {
 
 type ITaskService interface {
 	GetOrCreateTask(ctx context.Context, endpoint domain.Endpoint) (*domain.Task, error)
+	CreateTask(ctx context.Context, endpoint domain.Endpoint) (*domain.Task, error)
 	GetTask(ctx context.Context, endpoint domain.Endpoint) (*domain.Task, error)
 	RemoveTask(ctx context.Context, endpoint domain.Endpoint) error
 }

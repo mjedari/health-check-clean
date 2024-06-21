@@ -10,8 +10,17 @@ import (
 Task
 */
 
+type TaskState int
+
+const (
+	INIT TaskState = iota
+	RUNNING
+	STOPPED
+)
+
 type Task struct {
 	Endpoint   Endpoint
+	State      TaskState
 	Stop       chan bool
 	LastStatus int
 	LastUpdate time.Time
@@ -31,23 +40,35 @@ func (t *Task) UpdateStatus(status int) {
 }
 
 func NewTask(endpoint Endpoint) *Task {
-	return &Task{Endpoint: endpoint, Stop: make(chan bool)}
+	return &Task{State: INIT, Endpoint: endpoint, Stop: make(chan bool)}
+}
+
+func (t *Task) TaskStart() {
+	t.State = RUNNING
+}
+
+func (t *Task) TaskStop() {
+	t.State = STOPPED
+}
+
+func (t *Task) IsRunning() bool {
+	return t.State == RUNNING
 }
 
 /*
-Task Cache
+Task Pool
 */
 
-type TaskCache struct {
+type TaskPool struct {
 	list map[uint]*Task
 	sync.Mutex
 }
 
-func NewTaskCache() *TaskCache {
-	return &TaskCache{list: make(map[uint]*Task)}
+func NewTaskPool() *TaskPool {
+	return &TaskPool{list: make(map[uint]*Task)}
 }
 
-func (p *TaskCache) Get(key uint) *Task {
+func (p *TaskPool) Get(key uint) *Task {
 	p.Lock()
 	v, ok := p.list[key]
 	p.Unlock()
@@ -57,12 +78,12 @@ func (p *TaskCache) Get(key uint) *Task {
 	return v
 }
 
-func (p *TaskCache) Set(key uint, task *Task) {
+func (p *TaskPool) Set(key uint, task *Task) {
 	p.Lock()
 	p.list[key] = task
 	p.Unlock()
 }
 
-func (p *TaskCache) Delete(key uint) {
+func (p *TaskPool) Delete(key uint) {
 	delete(p.list, key)
 }

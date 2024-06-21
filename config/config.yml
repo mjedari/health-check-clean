@@ -17,9 +17,9 @@ Redis:
   Pass:
 
 Webhook:
-  URL: localhost
+  URL: http://localhost:8000/test-webhook
   Method: POST # get, post
-  Timeout: 30 # in seconds
+  Timeout: 30s
 
 Service:
-  Storage: redis # memory
+  Cache: redis # memory
