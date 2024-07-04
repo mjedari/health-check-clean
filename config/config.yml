@@ -4,14 +4,14 @@ Server:
   Environment: dev # dev, prod
 
 MySQL:
-  Host: localhost
+  Host: db
   Port: 3306 #3306
   User: root
   Pass: 2231218/m
   Database: health_db
 
 Redis:
-  Host: localhost
+  Host: redis
   Port: 6379 # 6379
   User:
   Pass:

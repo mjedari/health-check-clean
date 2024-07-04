@@ -2,6 +2,7 @@ package contract
 
 import (
 	"context"
+	"github.com/mjedari/health-checker/domain"
 )
 
 type ICache interface {
@@ -17,4 +18,11 @@ type IRepository interface {
 	ReadAll(ctx context.Context, out any) error
 	Update(ctx context.Context, value any) error
 	Delete(ctx context.Context, value any) error
+}
+
+type IEndpointRepository interface {
+	GetALLEndpoints(ctx context.Context) ([]domain.Endpoint, error)
+	CreateEndpoint(ctx context.Context, endpoint *domain.Endpoint) error
+	FetchEndpoint(ctx context.Context, id uint) (domain.Endpoint, error)
+	DeleteEndpoint(ctx context.Context, endpoint *domain.Endpoint) error
 }

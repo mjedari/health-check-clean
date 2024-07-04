@@ -7,7 +7,7 @@ import (
 
 type IHealthService interface {
 	FetchAllEndpoints(ctx context.Context) ([]domain.Endpoint, error)
-	CreateEndpoint(ctx context.Context, endpoint *domain.Endpoint) error
+	CreateEndpoint(ctx context.Context, endpoint domain.Endpoint) error
 	DeleteEndpoint(ctx context.Context, id uint) error
 	FetchEndpoint(ctx context.Context, id uint) (domain.Endpoint, error)
 	StartWatching(ctx context.Context, endpoint domain.Endpoint) error

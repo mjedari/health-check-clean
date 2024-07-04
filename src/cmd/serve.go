@@ -41,7 +41,8 @@ func start() {
 	pool := domain.NewTaskPool()
 	newTaskService := tasksrv.NewTaskService(cache, pool)
 	clientService := httpsrv.NewHttpService(config.Config.Webhook)
-	healthService := healthsrv.NewHealthService(clientService, newMySQL, newTaskService)
+	endpointRepo := healthsrv.NewEndpointRepository(newMySQL)
+	healthService := healthsrv.NewHealthService(clientService, endpointRepo, newTaskService)
 	hh := handler.NewHealthHandler(healthService)
 
 	// set routes

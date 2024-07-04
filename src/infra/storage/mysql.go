@@ -15,8 +15,8 @@ type MySQL struct {
 
 func NewMySQL(conf config.MySQL) (*MySQL, error) {
 	ctx := context.TODO()
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", conf.User, conf.Pass, conf.Host, conf.Port, conf.Database)
-
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", conf.User, conf.Pass, conf.Host, conf.Port, conf.Database)
+	fmt.Println("THIISSS ISS: ", dsn)
 	mysqlRetry, err := utils.Retry(func(ctx context.Context) (any, error) {
 		db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 

@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 services:
   app:
@@ -9,30 +9,36 @@ services:
     ports:
       - '8080:8080'
     depends_on:
-      - mysql
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
-  mysql:
-    container_name: mysql
+
+  db:
+    container_name: health_db
     image: mysql:8.0
-    platform: linux/amd64
-    command: '--default-authentication-plugin=mysql_native_password'
-    restart: always
     environment:
-        MYSQL_ROOT_PASSWORD: 2231218/m
-        MYSQL_DATABASE: health_db
+      MYSQL_ROOT_PASSWORD: 2231218/m
+      MYSQL_DATABASE: health_db
     volumes:
       - my-db:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
   redis:
     container_name: redis
     image: redis:7.0
-    platform: linux/amd64
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
 volumes:
   my-db:
-
-networks:
-  health-checker:
-    name: health-checker
-    driver: bridge

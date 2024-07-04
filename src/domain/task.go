@@ -61,7 +61,7 @@ Task Pool
 
 type TaskPool struct {
 	list map[uint]*Task
-	sync.Mutex
+	mu   sync.RWMutex
 }
 
 func NewTaskPool() *TaskPool {
@@ -69,9 +69,9 @@ func NewTaskPool() *TaskPool {
 }
 
 func (p *TaskPool) Get(key uint) *Task {
-	p.Lock()
+	p.mu.Lock()
+	defer p.mu.Unlock()
 	v, ok := p.list[key]
-	p.Unlock()
 	if !ok {
 		return nil
 	}
@@ -79,11 +79,19 @@ func (p *TaskPool) Get(key uint) *Task {
 }
 
 func (p *TaskPool) Set(key uint, task *Task) {
-	p.Lock()
+	p.mu.Lock()
+	defer p.mu.Unlock()
 	p.list[key] = task
-	p.Unlock()
 }
 
 func (p *TaskPool) Delete(key uint) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
 	delete(p.list, key)
+}
+
+func (p *TaskPool) Length() int {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	return len(p.list)
 }

@@ -12,22 +12,19 @@ import (
 type HealthService struct {
 	client      contract.IClient
 	taskService contract.ITaskService
-	repo        contract.IRepository
+	repo        contract.IEndpointRepository
 }
 
-func NewHealthService(client contract.IClient, repo contract.IRepository, taskService contract.ITaskService) *HealthService {
+func NewHealthService(client contract.IClient, repo contract.IEndpointRepository, taskService contract.ITaskService) *HealthService {
 	return &HealthService{client: client, repo: repo, taskService: taskService}
 }
 
 func (s *HealthService) FetchAllEndpoints(ctx context.Context) ([]domain.Endpoint, error) {
-	var endpoints []domain.Endpoint
-	s.repo.ReadAll(ctx, &endpoints)
-
-	return endpoints, nil
+	return s.repo.GetALLEndpoints(ctx)
 }
 
-func (s *HealthService) CreateEndpoint(ctx context.Context, endpoint *domain.Endpoint) error {
-	err := s.repo.Create(ctx, endpoint)
+func (s *HealthService) CreateEndpoint(ctx context.Context, endpoint domain.Endpoint) error {
+	err := s.repo.CreateEndpoint(ctx, &endpoint)
 	return err
 }
 
@@ -40,7 +37,7 @@ func (s *HealthService) DeleteEndpoint(ctx context.Context, id uint) error {
 	}
 
 	// delete from database
-	err = s.repo.Delete(ctx, endpoint)
+	err = s.repo.DeleteEndpoint(ctx, &endpoint)
 	if err != nil {
 		return err
 	}
@@ -49,8 +46,7 @@ func (s *HealthService) DeleteEndpoint(ctx context.Context, id uint) error {
 }
 
 func (s *HealthService) FetchEndpoint(ctx context.Context, id uint) (domain.Endpoint, error) {
-	var endpoint domain.Endpoint
-	err := s.repo.Read(ctx, id, &endpoint)
+	endpoint, err := s.repo.FetchEndpoint(ctx, id)
 	return endpoint, err
 }
 
